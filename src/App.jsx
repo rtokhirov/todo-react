@@ -30,6 +30,7 @@ function App() {
   const [data,setData]=useState(starterData)
   const mode = localStorage.getItem('mode')
   const [location,setLocation]=useState(localStorage.getItem('location')?JSON.parse(localStorage.getItem('location')):'All')
+  
   useEffect(()=>{
     if(mode){
       let ssd=JSON.parse(localStorage.getItem('mode'))
@@ -37,25 +38,27 @@ function App() {
     }
   },[])
 
+    useEffect(()=>{
 
-  useEffect(()=>{
-    let aclist = [];
-    starterData.forEach((element) => {
-      if (!element.completed) {
-        aclist.push(element);
-      }
-    });
-
-    let complist = [];
-    starterData.forEach((element) => {
-      if (element.completed) {
-        complist.push(element);
-      }
-    });
-    setActivelist(aclist)
-    setCompletedList(complist)
-  },[starterData,all,active,completed,data])
+      let actlist = [];
+      starterData.forEach((element) => {
+        if (!element.completed) {
+          actlist.push(element);
+        }
+      });
+      setActivelist(actlist)
   
+      let complist = [];
+      starterData.forEach((element) => {
+        if (element.completed) {
+          complist.push(element);
+        }
+      });
+      setCompletedList(complist)
+   
+  },[starterData,data])
+   
+
   const createItem =(e)=>{
     e.preventDefault()
     let val=text.trim()
@@ -79,6 +82,7 @@ function App() {
       setStarterData(list)
       localStorage.setItem('data',JSON.stringify(list))
       setText('')
+      
     }
   }
 
@@ -88,8 +92,27 @@ function App() {
     let newList=starterData.filter((element)=>{
       return id!=element.id
     })
+
     setStarterData(newList)
+    setData(newList)
+      let actlist = [];
+      starterData.forEach((element) => {
+        if (!element.completed) {
+          actlist.push(element);
+        }
+      });
+      setActivelist(actlist)
+  
+      let complist = [];
+      starterData.forEach((element) => {
+        if (element.completed) {
+          complist.push(element);
+        }
+      });
+    setCompletedList(complist)
+
     localStorage.setItem('data',JSON.stringify(newList))
+  
   }
 
   const completeItem=(id)=>{
@@ -105,6 +128,7 @@ function App() {
     })
     setStarterData(newList)
     localStorage.setItem('data',JSON.stringify(newList))
+
   }
 
   const clearCompleted=()=>{
@@ -112,7 +136,10 @@ function App() {
       return !element.completed
     })
     setStarterData(newList)
+    setData(newList)
+    setCompletedList([])
     localStorage.setItem('data',JSON.stringify(newList))
+ 
   }
   
   const filterFunc=(innerText)=>{
@@ -126,26 +153,16 @@ function App() {
       setAll(false)
       setActive(true)
       setCompleted(false)
-      let aclist = [];
-      starterData.forEach((element) => {
-        if (!element.completed) {
-          aclist.push(element);
-        }
-      });
-      setActivelist(aclist)
+      
+      
       setData(activeList)
       localStorage.setItem('location',JSON.stringify(innerText))
     }else if(innerText=='Completed'){
       setAll(false)
       setActive(false)
       setCompleted(true)
-      let complist = [];
-      starterData.forEach((element) => {
-        if (element.completed) {
-          complist.push(element);
-        }
-      });
-      setCompletedList(complist)
+     
+   
       setData(completedList)
       localStorage.setItem('location',JSON.stringify(innerText))
     }
@@ -173,6 +190,7 @@ function App() {
       setAll(false)
       setActive(false)
       setCompleted(true)
+
       let complist = [];
       starterData.forEach((element) => {
         if (element.completed) {
@@ -206,12 +224,49 @@ function App() {
         <Menu dark={dark}>
           <ul>
             {
-              // data.length>0&&  data.map((element)=>{
-              //   return (
-              //     element && <Item element={element} deleteItem={deleteItem} key={element.id+element.text}/>
-              //   )
-              // })
-              data.length>0&& data.map((element)=>{
+              all&& data.length>0&& data.map((element)=>{
+                return (
+                  <li 
+                    key={element.id+element.text} 
+                    // onClick={(ss)=>{completeItem(element.id)}}
+                  >
+                    {!element.completed&& <img onClick={(ss)=>{completeItem(element.id)}} src={circleDark} />}
+                    {element.completed&& <img onClick={(ss)=>{completeItem(element.id)}} src={completedImg} />}
+                    <div
+                      style={{cursor:"pointer"}}
+                      onDoubleClick={(ss)=>{completeItem(element.id)}}>
+                      {!element.completed&& <p>{element && element.text}</p>}
+                      {element.completed&& <p style={{textDecoration:'line-through',color:"#5f5959",cursor:"pointer"}}>{element && element.text}</p>}
+                      <small>{element && element.createdAt}</small>
+                    </div>
+                    <CanselBTN src={x} onClick={(eee)=>{deleteItem(element.id);}} />
+                  </li>
+                );
+              })
+            }
+            {
+              active&& activeList.length>0&& activeList.map((element)=>{
+                return (
+                  <li 
+                    key={element.id+element.text} 
+                    // onClick={(ss)=>{completeItem(element.id)}}
+                  >
+                    {!element.completed&& <img onClick={(ss)=>{completeItem(element.id)}} src={circleDark} />}
+                    {element.completed&& <img onClick={(ss)=>{completeItem(element.id)}} src={completedImg} />}
+                    <div
+                      style={{cursor:"pointer"}}
+                      onDoubleClick={(ss)=>{completeItem(element.id)}}>
+                      {!element.completed&& <p>{element && element.text}</p>}
+                      {element.completed&& <p style={{textDecoration:'line-through',color:"#5f5959",cursor:"pointer"}}>{element && element.text}</p>}
+                      <small>{element && element.createdAt}</small>
+                    </div>
+                    <CanselBTN src={x} onClick={(eee)=>{deleteItem(element.id);}} />
+                  </li>
+                );
+              })
+            }
+            {
+              completed&& completedList.length>0&& completedList.map((element)=>{
                 return (
                   <li 
                     key={element.id+element.text} 
