@@ -47,7 +47,6 @@ function App() {
         }
       });
       setActivelist(actlist)
-  
       let complist = [];
       starterData.forEach((element) => {
         if (element.completed) {
@@ -82,7 +81,21 @@ function App() {
       setStarterData(list)
       localStorage.setItem('data',JSON.stringify(list))
       setText('')
-      
+      let actlist = [];
+      starterData.forEach((element) => {
+        if (!element.completed) {
+          actlist.push(element);
+        }
+      });
+      setActivelist(actlist)
+  
+      let complist = [];
+      starterData.forEach((element) => {
+        if (element.completed) {
+          complist.push(element);
+        }
+      });
+    setCompletedList(complist)
     }
   }
 
